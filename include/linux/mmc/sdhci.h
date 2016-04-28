@@ -182,6 +182,9 @@ struct sdhci_host {
 #define SDHCI_QUIRK2_ADMA_SKIP_DATA_ALIGNMENT             (1<<13)
 /* Use reset workaround in case sdhci reset timeouts */
 #define SDHCI_QUIRK2_USE_RESET_WORKAROUND (1 << 15)
+#define SDHCI_QUIRK2_HOST_MASK_HS_BIT			(1<<4)
+/* Disable the DDR capability for the host */
+#define SDHCI_QUIRK2_HOST_DISABLE_DDR			(1<<1)
 
 	int irq;		/* Device IRQ */
 	void __iomem *ioaddr;	/* Mapped address */
@@ -228,6 +231,8 @@ struct sdhci_host {
 	u8 pwr;			/* Current voltage */
 
 	bool runtime_suspended;	/* Host is runtime suspended */
+
+	struct work_struct wait_for_busy_work; /* work to wait for busy to end */
 
 	struct mmc_request *mrq;	/* Current request */
 	struct mmc_command *cmd;	/* Current command */
@@ -292,6 +297,7 @@ struct sdhci_host {
 	int reset_wa_applied; /* reset workaround status */
 	ktime_t reset_wa_t; /* time when the reset workaround is applied */
 	int reset_wa_cnt; /* total number of times workaround is used */
+	unsigned int detect_delay; /*Delay in msecs for detecting change*/
 
 	unsigned long private[0] ____cacheline_aligned;
 };

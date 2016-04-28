@@ -95,3 +95,10 @@ obj-$(CONFIG_SENSORS_MC3430)	+= mc3xxx.o
 obj-$(CONFIG_INPUT_KIONIX_ACCEL)	+= kionix_accel.o
 obj-$(CONFIG_FPC1145_TEE)		+= fpc1145_tee.o
 obj-$(CONFIG_SENSORS_ISL29044A)	+= isl29044a.o
+ifeq ($(CONFIG_MFD_BCM_PMU59xxx),y)
+endif
+obj-$(CONFIG_KONA_HEADSET) += kona_headset.o
+obj-$(CONFIG_KONA_HEADSET_MULTI_BUTTON) += kona_headset_multi_button.o
+obj-$(CONFIG_INPUT_AKM09911)		+= akm09911.o
+obj-$(CONFIG_INPUT_EMMICRO)	+= em718x/
+obj-$(CONFIG_INPUT_EM718X_HUB)	+= em718x.o

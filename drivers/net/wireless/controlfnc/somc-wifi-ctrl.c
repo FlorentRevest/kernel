@@ -146,8 +146,10 @@ int somc_wifi_set_carddetect(int present)
 #endif
 #else
 	int ret = 0;
+#ifdef CONFIG_ARCH_MSM
 	if (present)
 		ret = msm_pcie_enumerate(bcmdhd_data->pci_number);
+#endif
 	return ret;
 #endif
 }

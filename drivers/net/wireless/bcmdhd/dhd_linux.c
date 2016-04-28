@@ -9244,9 +9244,11 @@ void dhd_set_version_info(dhd_pub_t *dhdp, char *fw)
 	if (!dhdp)
 		return;
 
+#if defined(BCMSDIO) || defined(BCMPCIE)
 	i = snprintf(&info_string[i], sizeof(info_string) - i,
 		"\n  Chip: %x Rev %x Pkg %x", dhd_bus_chip_id(dhdp),
 		dhd_bus_chiprev_id(dhdp), dhd_bus_chippkg_id(dhdp));
+#endif
 }
 int dhd_ioctl_entry_local(struct net_device *net, wl_ioctl_t *ioc, int cmd)
 {
