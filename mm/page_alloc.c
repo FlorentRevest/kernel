@@ -1072,6 +1072,7 @@ __rmqueue_fallback(struct zone *zone, int order, int start_migratetype)
 					struct page, lru);
 			area->nr_free--;
 
+#ifdef CONFIG_CMA
 			/*
 			 * If breaking a large block of pages, move all free
 			 * pages to the preferred allocation list. If falling
@@ -1100,11 +1101,13 @@ __rmqueue_fallback(struct zone *zone, int order, int start_migratetype)
 
 				migratetype = start_migratetype;
 			}
+#endif
 
 			/* Remove the page from the freelists */
 			list_del(&page->lru);
 			rmv_page_order(page);
 
+#ifdef CONFIG_CMA
 			/* Take ownership for orders >= pageblock_order */
 			if (current_order >= pageblock_order &&
 			    !is_migrate_cma(migratetype))
@@ -1114,6 +1117,7 @@ __rmqueue_fallback(struct zone *zone, int order, int start_migratetype)
 			expand(zone, page, order, current_order, area,
 			       is_migrate_cma(migratetype)
 			     ? migratetype : start_migratetype);
+#endif
 
 			trace_mm_page_alloc_extfrag(page, order, current_order,
 				start_migratetype, migratetype);
@@ -1158,9 +1162,11 @@ retry_reserve:
 static struct page *__rmqueue_cma(struct zone *zone, unsigned int order)
 {
 	struct page *page = 0;
+#ifdef CONFIG_CMA
 	if (IS_ENABLED(CONFIG_CMA))
 		if (!zone->cma_alloc)
 			page = __rmqueue_smallest(zone, order, MIGRATE_CMA);
+#endif
 	return page;
 }
 

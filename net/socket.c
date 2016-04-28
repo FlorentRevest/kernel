@@ -108,6 +108,9 @@
 #include <linux/atalk.h>
 
 static BLOCKING_NOTIFIER_HEAD(sockev_notifier_list);
+#ifdef CONFIG_BCM_NET_WHITELIST_SUPPORT
+#include <linux/broadcom/bcm_fuse_net_if.h>
+#endif
 
 static int sock_no_open(struct inode *irrelevant, struct file *dontcare);
 static ssize_t sock_aio_read(struct kiocb *iocb, const struct iovec *iov,
@@ -590,6 +593,10 @@ const struct file_operations bad_sock_fops = {
 
 void sock_release(struct socket *sock)
 {
+#ifdef CONFIG_BCM_NET_WHITELIST_SUPPORT
+	bcm_net_add_or_remove_port(sock, false);
+#endif
+
 	if (sock->ops) {
 		struct module *owner = sock->ops->owner;
 
@@ -1382,6 +1389,7 @@ SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 	BUILD_BUG_ON(SOCK_CLOEXEC & SOCK_TYPE_MASK);
 	BUILD_BUG_ON(SOCK_NONBLOCK & SOCK_TYPE_MASK);
 
+
 	flags = type & ~SOCK_TYPE_MASK;
 	if (flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
 		return -EINVAL;
@@ -1570,6 +1578,10 @@ SYSCALL_DEFINE2(listen, int, fd, int, backlog)
 				sock_put(sock->sk);
 		}
 		fput_light(sock->file, fput_needed);
+
+#ifdef CONFIG_BCM_NET_WHITELIST_SUPPORT
+		bcm_net_add_or_remove_port(sock, true);
+#endif
 	}
 	return err;
 }
